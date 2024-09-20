@@ -1,0 +1,65 @@
+ Shortest Palindrome
+You are given a string s. You can convert s to a palindrome by adding characters in front of it.
+
+Return the shortest palindrome you can find by performing this transformation.
+
+Example 1:
+Input: s = "aacecaaa"
+Output: "aaacecaaa"
+
+Example 2:
+Input: s = "abcd"
+Output: "dcbabcd"
+ 
+
+Constraints:
+
+0 <= s.length <= 5 * 104
+s consists of lowercase English letters only.
+
+Solution in java:
+
+public class Solution {
+    public String shortestPalindrome(String s) {
+        if (s == null || s.length() == 0) {
+            return s;
+        }
+
+        String temp = s + "#" + new StringBuilder(s).reverse().toString();
+        int[] table = buildKMPTable(temp);
+        
+        // Length of the longest palindromic prefix
+        int longestPalindromicPrefixLength = table[table.length - 1];
+        
+        // Add the reverse of the suffix in front of the original string
+        String suffix = s.substring(longestPalindromicPrefixLength);
+        StringBuilder result = new StringBuilder(suffix).reverse().append(s);
+        
+        return result.toString();
+    }
+    
+    // Build the KMP table (partial match table)
+    private int[] buildKMPTable(String s) {
+        int[] table = new int[s.length()];
+        int j = 0;  // index for the longest prefix which is also suffix
+
+        // Build the KMP table
+        for (int i = 1; i < s.length(); i++) {
+            while (j > 0 && s.charAt(i) != s.charAt(j)) {
+                j = table[j - 1];
+            }
+            if (s.charAt(i) == s.charAt(j)) {
+                j++;
+            }
+            table[i] = j;
+        }
+        
+        return table;
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        System.out.println(solution.shortestPalindrome("aacecaaa")); // Output: "aaacecaaa"
+        System.out.println(solution.shortestPalindrome("abcd"));     // Output: "dcbabcd"
+    }
+}
